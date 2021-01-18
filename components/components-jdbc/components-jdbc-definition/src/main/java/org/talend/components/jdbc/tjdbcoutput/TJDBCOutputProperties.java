@@ -390,7 +390,7 @@ public class TJDBCOutputProperties extends FixedConnectorsComponentProperties im
         setting.setClearDataInTable(this.clearDataInTable.getValue());
         setting.setDieOnError(this.dieOnError.getValue());
 
-        setting.setUseAutoCommit(this.useDataSource.getValue());
+        setting.setUseDataSource(this.useDataSource.getValue());
         setting.setDataSource(this.dataSource.getValue());
 
         setting.setCommitEvery(this.commitEvery.getValue());
