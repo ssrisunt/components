@@ -112,6 +112,12 @@ public class SalesforceBulkExecReaderTestIT extends SalesforceTestBase {
     }
 
     @Test
+    @Ignore("need manual operation for oauth login")
+    public void testBulkV2EmptySource() throws Throwable {
+        testOutputBulkExec(0, true);
+    }
+
+    @Test
     public void testOutputBulkExecV1Reject() throws Throwable {
         testOutputBulkExecReject(false);
     }

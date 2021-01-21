@@ -71,6 +71,9 @@ final class SalesforceBulkV2ExecReader extends SalesforceReader {
         bulkRuntime = new SalesforceBulkV2Runtime(bulkV2Conn, sprops);
         try {
             bulkRuntime.executeBulk();
+            if (bulkRuntime.getNumberRecordsProcessed() <= 0) {
+                return false;
+            }
             return retrieveResultSet();
         } catch (InterruptedException e) {
             throw new IOException(e);
