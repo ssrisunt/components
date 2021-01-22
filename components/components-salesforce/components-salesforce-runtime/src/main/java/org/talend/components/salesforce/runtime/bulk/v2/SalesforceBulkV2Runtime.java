@@ -64,6 +64,8 @@ public class SalesforceBulkV2Runtime {
 
     private String bulkFileName;
 
+    private boolean safetySwitch = true;
+
     public SalesforceBulkV2Runtime(BulkV2Connection bulkConnection, TSalesforceBulkExecProperties sprops)
             throws BulkV2ClientException {
         this.bulkConnection = bulkConnection;
@@ -152,6 +154,7 @@ public class SalesforceBulkV2Runtime {
 
     public BulkResultSet getResultSet(InputStream input) throws IOException {
         CsvReader reader = new CsvReader(new InputStreamReader(input), getDelimitedChar(columnDelimiter));
+        reader.setSafetySwitch(safetySwitch);
         List<String> baseFileHeader = null;
         if (reader.readRecord()) {
             baseFileHeader = Arrays.asList(reader.getValues());
@@ -199,6 +202,10 @@ public class SalesforceBulkV2Runtime {
 
     public void setBulkFileName(String bulkFileName) {
         this.bulkFileName = bulkFileName;
+    }
+
+    public void setSafetySwitch(boolean safetySwitch) {
+        this.safetySwitch = safetySwitch;
     }
 
     public int getNumberRecordsFailed() {

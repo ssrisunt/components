@@ -36,6 +36,8 @@ public class SalesforceBulkProperties extends ComponentPropertiesImpl {
 
     public Property<LineEnding> lineEnding = newEnum("lineEnding", LineEnding.class);
 
+    public Property<Boolean> safetySwitch = newBoolean("safetySwitch", true);
+
     public SalesforceBulkProperties(String name) {
         super(name);
     }
@@ -60,6 +62,7 @@ public class SalesforceBulkProperties extends ComponentPropertiesImpl {
         mainForm.addRow(rowsToCommit);
         mainForm.addColumn(bytesToCommit);
         mainForm.addRow(waitTimeCheckBatchState);
+        mainForm.addRow(safetySwitch);
     }
 
     @Override

@@ -59,6 +59,7 @@ final class SalesforceBulkExecReader extends SalesforceReader {
                 new SalesforceBulkRuntime(((SalesforceSource) getCurrentSource()).connect(container).bulkConnection);
         bulkRuntime.setConcurrencyMode(sprops.bulkProperties.concurrencyMode.getValue());
         bulkRuntime.setAwaitTime(sprops.bulkProperties.waitTimeCheckBatchState.getValue());
+        bulkRuntime.setSafetySwitch(sprops.bulkProperties.safetySwitch.getValue());
 
         try {
             // We only support CSV file for bulk output
@@ -160,10 +161,12 @@ final class SalesforceBulkExecReader extends SalesforceReader {
         return querySchema;
     }
 
-    @Override
-    public void close() throws IOException {
-        bulkRuntime.close();
-    }
+	@Override
+	public void close() throws IOException {
+		if (bulkRuntime != null) {
+			bulkRuntime.close();
+		}
+	}
 
     @Override
     public Map<String, Object> getReturnValues() {

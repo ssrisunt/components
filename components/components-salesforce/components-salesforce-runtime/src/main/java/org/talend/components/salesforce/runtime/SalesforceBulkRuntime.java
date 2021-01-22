@@ -223,6 +223,7 @@ public class SalesforceBulkRuntime {
     private void prepareLog() throws IOException {
         br = new BufferedReader(new InputStreamReader(new FileInputStream(bulkFileName), FILE_ENCODING));
         baseFileReader = new com.csvreader.CsvReader(br, ',');
+        baseFileReader.setSafetySwitch(safetySwitch);
         if (baseFileReader.readRecord()) {
             baseFileHeader = Arrays.asList(baseFileReader.getValues());
         }

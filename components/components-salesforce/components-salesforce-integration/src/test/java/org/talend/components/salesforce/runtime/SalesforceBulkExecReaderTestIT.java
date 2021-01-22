@@ -126,6 +126,70 @@ public class SalesforceBulkExecReaderTestIT extends SalesforceTestBase {
         testOutputBulkExec(0,false);
     }
 
+    @Test
+    public void testBulkExecSafetSwitch() throws Throwable {
+        testOutputBulkExecSafetSwitch(false, false);
+    }
+
+    @Test
+    public void testBulkExecV2SafetSwitch() throws Throwable {
+        testOutputBulkExecSafetSwitch(true, false);
+    }
+
+    private void testOutputBulkExecSafetSwitch(boolean isBulkV2, boolean safetySwitch) throws Throwable {
+
+        String random = createNewRandom();
+
+        List<IndexedRecord> rows = new ArrayList<>();
+        GenericData.Record row = new GenericData.Record(getMakeRowSchema(false));
+        StringBuilder sb = new StringBuilder(random);
+        for (int i = 0; i < 100001; i++) {
+            sb.append("a");
+        }
+        String nameValue = sb.toString();
+        row.put("Name", nameValue);
+        rows.add(row);
+
+        TSalesforceOutputBulkExecProperties outputBulkExecProperties = null;
+
+        if (isBulkV2) {
+            outputBulkExecProperties = createBulkV2Properties();
+        } else {
+            outputBulkExecProperties = createAccountSalesforceOutputBulkExecProperties();
+        }
+
+        // Prepare the bulk file
+        TSalesforceOutputBulkProperties outputBulkProperties =
+                (TSalesforceOutputBulkProperties) outputBulkExecProperties.getInputComponentProperties();
+        generateBulkFile(outputBulkProperties, rows);
+
+        // Execute the bulk action
+        TSalesforceBulkExecProperties bulkExecProperties =
+                (TSalesforceBulkExecProperties) outputBulkExecProperties.getOutputComponentProperties();
+        bulkExecProperties.bulkProperties.safetySwitch.setValue(safetySwitch);
+
+        try {
+            // change to update
+            executeBulkInsert(bulkExecProperties, random, 1);
+            fail("record should be rejected");
+        } catch (IOException | DataRejectException e) {
+            if (safetySwitch) {
+                String errorMessage = e.getMessage();
+                assertNotNull(errorMessage);
+                assertTrue(errorMessage.contains("Set the SafetySwitch property to false"));
+            } else {
+                assertEquals(DataRejectException.class, e.getClass());
+                Map<String, Object> info = ((DataRejectException) e).getRejectInfo();
+                IndexedRecord record = (IndexedRecord) info.get("talend_record");
+                assertEquals(nameValue, record.get(record.getSchema().getField("Name").pos()));
+            }
+
+        } finally {
+            // Delete the generated bulk file
+            delete(outputBulkProperties);
+        }
+    }
+
     /**
      * This test for tSalesforceOutputBulk and tSalesforceBulkExec The runtime of tSalesforceOutputBulkExec should be
      * work like this.
