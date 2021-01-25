@@ -132,6 +132,7 @@ public class SalesforceBulkExecReaderTestIT extends SalesforceTestBase {
     }
 
     @Test
+    @Ignore("need manual operation for oauth login")
     public void testBulkExecV2SafetSwitch() throws Throwable {
         testOutputBulkExecSafetSwitch(true, false);
     }
